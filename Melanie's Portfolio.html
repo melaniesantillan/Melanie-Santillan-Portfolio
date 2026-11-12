@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Melanie Santillan — portfolio — Visual Studio Code</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    :root {
+      --bg-titlebar: #181818;
+      --bg-activitybar: #181818;
+      --bg-sidebar: #181818;
+      --bg-editor: #1f1f1f;
+      --bg-tab-inactive: #181818;
+      --bg-tab-active: #1f1f1f;
+      --bg-panel: #181818;
+      --bg-statusbar: #0078d4;
+      --border-color: #2b2b2b;
+      --text-primary: #cccccc;
+      --text-muted: #858585;
+      --accent: #0078d4;
+      --card-bg: #252526;
+    }
+
+    body.theme-monokai {
+      --bg-titlebar: #1e1f1c;
+      --bg-activitybar: #1e1f1c;
+      --bg-sidebar: #21221e;
+      --bg-editor: #272822;
+      --bg-tab-inactive: #1e1f1c;
+      --bg-tab-active: #272822;
+      --bg-panel: #1e1f1c;
+      --bg-statusbar: #75715e;
+      --border-color: #3e3d32;
+      --text-primary: #f8f8f2;
+      --text-muted: #75715e;
+      --accent: #a6e22e;
+      --card-bg: #2f3029;
+    }
+
+    body.theme-github {
+      --bg-titlebar: #010409;
+      --bg-activitybar: #010409;
+      --bg-sidebar: #010409;
+      --bg-editor: #0d1117;
+      --bg-tab-inactive: #010409;
+      --bg-tab-active: #0d1117;
+      --bg-panel: #010409;
+      --bg-statusbar: #1f6feb;
+      --border-color: #30363d;
+      --text-primary: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --card-bg: #161b22;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-editor);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    .code-font {
+      font-family: "Cascadia Code", "Fira Code", Consolas, "Courier New", monospace;
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(121, 121, 121, 0.35); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(121, 121, 121, 0.55); }
+
+    .syn-key { color: #9cdcfe; }
+    .syn-str { color: #ce9178; }
+    .syn-num { color: #b5cea8; }
+    .syn-bool { color: #569cd6; }
+    .syn-kw { color: #c586c0; }
+    .syn-fn { color: #dcdcaa; }
+    .syn-com { color: #6a9955; font-style: italic; }
+    .syn-tag { color: #4ec9b0; }
+  </style>
+</head>
+<body>
+
+  <!-- Title Bar -->
+  <header style="background-color: var(--bg-titlebar); border-bottom: 1px solid var(--border-color);" class="h-9 px-3 flex items-center justify-between text-xs shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5">
+        <span class="w-3 h-3 rounded-full bg-[#ff5f56] inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-[#ffbd2e] inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-[#27c93f] inline-block"></span>
+      </div>
+      <div class="hidden md:flex items-center gap-3 text-[12px] opacity-80 ml-2">
+        <span>File</span>
+        <span>Edit</span>
+        <span>Selection</span>
+        <span>View</span>
+        <span>Go</span>
+        <span>Run</span>
+        <span>Terminal</span>
+        <span>Help</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded px-3 py-0.5 text-[11px] w-64 sm:w-80 justify-center truncate">
+      <i class="fa-solid fa-magnifying-glass text-[10px] opacity-60"></i>
+      <span id="titlebar-name" class="truncate">Melanie Santillan — portfolio — Visual Studio Code</span>
+    </div>
+
+    <button onclick="openModal()" class="bg-[#0078d4] hover:bg-[#026ec1] text-white font-medium px-2.5 py-1 rounded text-[11px] flex items-center gap-1.5 transition cursor-pointer shadow-sm">
+      <i class="fa-solid fa-pen-to-square"></i>
+      <span>Customize Profile</span>
+    </button>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- Activity Bar -->
+    <aside style="background-color: var(--bg-activitybar); border-right: 1px solid var(--border-color);" class="w-12 flex flex-col justify-between items-center py-2 shrink-0">
+      <div class="flex flex-col gap-4 w-full items-center">
+        <button onclick="toggleSidebar()" title="Explorer" class="w-full py-2 flex justify-center border-l-2 border-white text-white opacity-95 cursor-pointer">
+          <i class="fa-regular fa-copy text-lg"></i>
+        </button>
+        <button onclick="focusTerminal()" title="Search / Terminal" class="w-full py-2 flex justify-center opacity-50 hover:opacity-100 cursor-pointer">
+          <i class="fa-solid fa-magnifying-glass text-lg"></i>
+        </button>
+        <button onclick="selectFile('socials.json')" title="Source Control (socials.json)" class="w-full py-2 flex justify-center opacity-50 hover:opacity-100 cursor-pointer">
+          <i class="fa-solid fa-code-branch text-lg"></i>
+        </button>
+        <button onclick="selectFile('roblox.lua')" title="Roblox Extensions" class="w-full py-2 flex justify-center opacity-50 hover:opacity-100 cursor-pointer">
+          <i class="fa-solid fa-cubes text-lg"></i>
+        </button>
+      </div>
+      <div class="flex flex-col gap-4 w-full items-center">
+        <button onclick="openModal()" title="Profile Settings" class="w-full py-2 flex justify-center opacity-60 hover:opacity-100 cursor-pointer">
+          <i class="fa-regular fa-circle-user text-lg"></i>
+        </button>
+        <button onclick="cycleTheme()" title="Switch Theme (Dark+ / Monokai / GitHub Dark)" class="w-full py-2 flex justify-center opacity-60 hover:opacity-100 cursor-pointer">
+          <i class="fa-solid fa-gear text-lg"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Explorer Sidebar -->
+    <aside id="sidebar" style="background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color);" class="w-56 hidden sm:flex flex-col shrink-0 text-xs">
+      <div class="px-4 py-2.5 text-[11px] tracking-wider uppercase font-semibold opacity-70 flex justify-between items-center">
+        <span>Explorer</span>
+        <i class="fa-solid fa-ellipsis opacity-60"></i>
+      </div>
+      <div class="px-2 py-1 font-bold text-[11px] flex items-center gap-1.5 opacity-90">
+        <i class="fa-solid fa-chevron-down text-[9px]"></i>
+        <span>PORTFOLIO-WORKSPACE</span>
+      </div>
+      <div id="file-list" class="flex flex-col mt-1"></div>
+    </aside>
+
+    <!-- Editor + Preview + Terminal Column -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Tabs Bar -->
+      <div id="tabs-bar" style="background-color: var(--bg-tab-inactive); border-bottom: 1px solid var(--border-color);" class="h-9 flex items-center overflow-x-auto shrink-0 text-xs"></div>
+
+      <!-- Breadcrumbs -->
+      <div style="background-color: var(--bg-editor); border-bottom: 1px solid var(--border-color);" class="h-6 px-4 flex items-center gap-1.5 text-[11px] opacity-65 shrink-0">
+        <span>src</span>
+        <i class="fa-solid fa-chevron-right text-[9px]"></i>
+        <span id="breadcrumb-file">socials.json</span>
+      </div>
+
+      <!-- Split Editor & Live Interactive Preview -->
+      <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+
+        <!-- Left Pane: Code View -->
+        <div class="flex-1 overflow-auto p-4 code-font text-[13px] leading-6 select-text" style="border-right: 1px solid var(--border-color);">
+          <div id="code-container"></div>
+        </div>
+
+        <!-- Right Pane: Live Interactive Preview -->
+        <div class="flex-1 overflow-auto p-5 bg-black/15">
+          <div class="flex items-center justify-between mb-4 pb-2 border-b border-white/10">
+            <span class="text-xs uppercase tracking-wider font-semibold opacity-70 flex items-center gap-2">
+              <i class="fa-solid fa-eye text-[#0078d4]"></i> Live Interactive Preview
+            </span>
+            <span id="preview-badge" class="text-[11px] px-2 py-0.5 rounded bg-white/10 opacity-80">All Accounts</span>
+          </div>
+          <div id="preview-container"></div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Integrated Terminal -->
+      <div style="background-color: var(--bg-panel); border-top: 1px solid var(--border-color);" class="h-40 flex flex-col shrink-0">
+        <div class="flex items-center justify-between px-4 py-1.5 text-[11px] border-b border-white/5">
+          <div class="flex items-center gap-5 uppercase tracking-wider">
+            <span class="opacity-50">Problems</span>
+            <span class="opacity-50">Output</span>
+            <span class="opacity-50">Debug Console</span>
+            <span class="border-b border-white pb-0.5 font-semibold">Terminal</span>
+          </div>
+          <div class="flex items-center gap-2 opacity-70 text-xs">
+            <i class="fa-solid fa-terminal"></i>
+            <span>bash</span>
+          </div>
+        </div>
+        <div id="terminal-output" onclick="document.getElementById('terminal-input').focus()" class="flex-1 overflow-auto px-4 py-2 code-font text-xs leading-5 select-text cursor-text">
+          <div class="text-emerald-400">Welcome to Melanie Santillan's Interactive VS Code Portfolio!</div>
+          <div class="opacity-70 mb-1">Type <span class="text-sky-400">help</span> for commands, <span class="text-sky-400">socials</span> to list links, or <span class="text-sky-400">edit</span> to customize.</div>
+        </div>
+        <div class="px-4 py-1.5 flex items-center gap-2 code-font text-xs border-t border-white/5">
+          <span class="text-emerald-400 font-semibold">melanie@portfolio:~/src$</span>
+          <input id="terminal-input" type="text" placeholder="Type a command (help, socials, spotify, roblox, github, discord, edit, clear)..." class="bg-transparent border-none outline-none flex-1 text-inherit code-font" />
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <footer style="background-color: var(--bg-statusbar);" class="h-6 px-3 flex items-center justify-between text-[11px] text-white shrink-0">
+    <div class="flex items-center gap-4">
+      <span class="flex items-center gap-1"><i class="fa-solid fa-code-branch"></i> main*</span>
+      <span class="flex items-center gap-1"><i class="fa-regular fa-circle-xmark"></i> 0 <i class="fa-solid fa-triangle-exclamation ml-1"></i> 0</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span id="status-theme">Theme: Dark+</span>
+      <span class="hidden sm:inline">Ln 1, Col 1</span>
+      <span class="hidden sm:inline">UTF-8</span>
+      <span id="status-lang">JSON</span>
+    </div>
+  </footer>
+
+  <!-- Customize Profile Modal -->
+  <div id="profile-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
+    <div style="background-color: var(--card-bg); border: 1px solid var(--border-color);" class="w-full max-w-md rounded-lg shadow-2xl overflow-hidden text-xs">
+      <div class="px-4 py-3 border-b border-white/10 flex justify-between items-center">
+        <span class="font-semibold text-sm flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-[#0078d4]"></i> Customize Portfolio Details
+        </span>
+        <button onclick="closeModal()" class="opacity-60 hover:opacity-100 cursor-pointer"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+      <form id="profile-form" class="p-4 flex flex-col gap-3">
+        <div>
+          <label class="block opacity-75 mb-1">Full Name</label>
+          <input id="inp-name" type="text" class="w-full bg-black/30 border border-white/15 rounded px-2.5 py-1.5 text-white outline-none focus:border-[#0078d4]" />
+        </div>
+        <div>
+          <label class="block opacity-75 mb-1">Bio / Tagline</label>
+          <input id="inp-bio" type="text" class="w-full bg-black/30 border border-white/15 rounded px-2.5 py-1.5 text-white outline-none focus:border-[#0078d4]" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block opacity-75 mb-1">Spotify Profile URL</label>
+            <input id="inp-spotify" type="text" class="w-full bg-black/30 border border-white/15 rounded px-2.5 py-1.5 text-white outline-none focus:border-[#0078d4]" />
+          </div>
+          <div>
+            <label class="block opacity-75 mb-1">Roblox Username</label>
+            <input id="inp-roblox" type="text" class="w-full bg-black/30 border border-white/15 rounded px-2.5 py-1.5 text-white outline-none focus:border-[#0078d4]" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block opacity-75 mb-1">GitHub Profile URL</label>
+            <input id="inp-github" type="text" class="w-full bg-black/30 border border-white/15 rounded px-2.5 py-1.5 text-white outline-none focus:border-[#0078d4]" />
+          </div>
+          <div>
+            <label class="block opacity-75 mb-1">Instagram Handle</label>
+            <input id="inp-instagram" type="text" class="w-full bg-black/30 border border-white/15 rounded px-2.5 py-1.5 text-white outline-none focus:border-[#0078d4]" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block opacity-75 mb-1">TikTok Handle</label>
+            <input id="inp-tiktok" type="text" class="w-full bg-black/30 border border-white/15 rounded px-2.5 py-1.5 text-white outline-none focus:border-[#0078d4]" />
+          </div>
+          <div>
+            <label class="block opacity-75 mb-1">Discord Username</label>
+            <input id="inp-discord" type="text" class="w-full bg-black/30 border border-white/15 rounded px-2.5 py-1.5 text-white outline-none focus:border-[#0078d4]" />
+          </div>
+        </div>
+        <div>
+          <label class="block opacity-75 mb-1">Email Address</label>
+          <input id="inp-email" type="email" class="w-full bg-black/30 border border-white/15 rounded px-2.5 py-1.5 text-white outline-none focus:border-[#0078d4]" />
+        </div>
+        <div class="flex justify-end gap-2 mt-2 pt-3 border-t border-white/10">
+          <button type="button" onclick="resetProfile()" class="px-3 py-1.5 rounded bg-white/10 hover:bg-white/15 cursor-pointer">Reset Default</button>
+          <button type="submit" class="px-4 py-1.5 rounded bg-[#0078d4] hover:bg-[#026ec1] text-white font-medium cursor-pointer">Save & Apply</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const defaultProfile = {
+      name: "Melanie Santillan",
+      bio: "Creator | Gamer | Music Lover (@kopiko_caramelo)",
+      spotify: "https://open.spotify.com/user/313vmrtutjbut2mvdjlrzteghtom?si=07628b039a8a4156",
+      roblox: "snvopyyy0",
+      github: "https://github.com/melaniesantillan",
+      instagram: "kopiko_caramelo",
+      tiktok: "kopiko_caramelo",
+      discord: "kopiko_caramel",
+      email: "melaniesantillan005@gmail.com"
+    };
+
+    let profile = JSON.parse(localStorage.getItem("vscode_portfolio_melanie_v2")) || { ...defaultProfile };
+    let activeFile = "socials.json";
+
+    const files = [
+      { name: "README.md", icon: "fa-solid fa-circle-info text-sky-400", lang: "Markdown" },
+      { name: "socials.json", icon: "fa-solid fa-brackets-curly text-yellow-400", lang: "JSON" },
+      { name: "spotify.tsx", icon: "fa-brands fa-react text-cyan-400", lang: "TypeScript React" },
+      { name: "roblox.lua", icon: "fa-solid fa-moon text-indigo-400", lang: "Lua" },
+      { name: "contact.env", icon: "fa-solid fa-sliders text-emerald-400", lang: "Dotenv" }
+    ];
+
+    const themes = [
+      { name: "Dark+", className: "" },
+      { name: "Monokai", className: "theme-monokai" },
+      { name: "GitHub Dark", className: "theme-github" }
+    ];
+    let themeIdx = 0;
+
+    function cleanHandle(val) {
+      return (val || "").replace(/^@/, "").trim();
+    }
+
+    function getUrls() {
+      const ig = cleanHandle(profile.instagram);
+      const tt = cleanHandle(profile.tiktok);
+      const rbx = cleanHandle(profile.roblox);
+      const robloxUrl = `https://www.roblox.com/search/users?keyword=${encodeURIComponent(rbx)}`;
+      const githubUrl = profile.github.startsWith("http") ? profile.github : `https://github.com/${profile.github}`;
+
+      return {
+        spotifyUrl: profile.spotify.startsWith("http") ? profile.spotify : `https://open.spotify.com/user/${profile.spotify}`,
+        tiktokUrl: `https://www.tiktok.com/@${tt}?is_from_webapp=1&sender_device=pc`,
+        instagramUrl: `https://www.instagram.com/${ig}/`,
+        robloxUrl: robloxUrl,
+        githubUrl: githubUrl,
+        discordUrl: `https://discord.com/channels/@me`,
+        emailUrl: `mailto:${profile.email}`
+      };
+    }
+
+    function renderSidebarAndTabs() {
+      const fileList = document.getElementById("file-list");
+      const tabsBar = document.getElementById("tabs-bar");
+      fileList.innerHTML = "";
+      tabsBar.innerHTML = "";
+
+      files.forEach(f => {
+        const isActive = f.name === activeFile;
+
+        const item = document.createElement("button");
+        item.className = `flex items-center gap-2 px-6 py-1.5 text-left w-full cursor-pointer transition ${isActive ? "bg-white/10 text-white font-medium" : "opacity-75 hover:bg-white/5"}`;
+        item.innerHTML = `<i class="${f.icon} w-3.5 text-center"></i><span>${f.name}</span>`;
+        item.onclick = () => selectFile(f.name);
+        fileList.appendChild(item);
+
+        const tab = document.createElement("button");
+        tab.style.backgroundColor = isActive ? "var(--bg-tab-active)" : "var(--bg-tab-inactive)";
+        tab.style.borderRight = "1px solid var(--border-color)";
+        tab.className = `h-full px-3.5 flex items-center gap-2 cursor-pointer shrink-0 transition ${isActive ? "text-white border-t-2 border-t-[#0078d4]" : "opacity-65 hover:opacity-100"}`;
+        tab.innerHTML = `<i class="${f.icon} text-xs"></i><span>${f.name}</span><span class="opacity-40 ml-1 text-[10px]">×</span>`;
+        tab.onclick = () => selectFile(f.name);
+        tabsBar.appendChild(tab);
+      });
+
+      const currentMeta = files.find(f => f.name === activeFile);
+      document.getElementById("breadcrumb-file").textContent = activeFile;
+      document.getElementById("status-lang").textContent = currentMeta ? currentMeta.lang : "Plain Text";
+      document.getElementById("titlebar-name").textContent = `${profile.name} — portfolio — Visual Studio Code`;
+    }
+
+    function formatLines(lines) {
+      return lines.map((line, i) => `
+        <div class="flex hover:bg-white/5 px-1 rounded">
+          <span class="w-8 text-right pr-4 select-none opacity-35 shrink-0">${i + 1}</span>
+          <span class="whitespace-pre">${line}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderCode() {
+      const urls = getUrls();
+      let lines = [];
+
+      if (activeFile === "socials.json") {
+        lines = [
+          `{`,
+          `  <span class="syn-key">"name"</span>: <span class="syn-str">"${profile.name}"</span>,`,
+          `  <span class="syn-key">"bio"</span>: <span class="syn-str">"${profile.bio}"</span>,`,
+          `  <span class="syn-key">"spotify"</span>: <span class="syn-str">"${urls.spotifyUrl}"</span>,`,
+          `  <span class="syn-key">"roblox"</span>: <span class="syn-str">"${profile.roblox}"</span>,`,
+          `  <span class="syn-key">"github"</span>: <span class="syn-str">"${urls.githubUrl}"</span>,`,
+          `  <span class="syn-key">"instagram"</span>: <span class="syn-str">"@${cleanHandle(profile.instagram)}"</span>,`,
+          `  <span class="syn-key">"tiktok"</span>: <span class="syn-str">"@${cleanHandle(profile.tiktok)}"</span>,`,
+          `  <span class="syn-key">"discord"</span>: <span class="syn-str">"${profile.discord}"</span>,`,
+          `  <span class="syn-key">"email"</span>: <span class="syn-str">"${profile.email}"</span>`,
+          `}`
+        ];
+      } else if (activeFile === "README.md") {
+        lines = [
+          `<span class="syn-bool"># Hi, I'm ${profile.name} 👋</span>`,
+          `<span class="syn-com">&gt; ${profile.bio}</span>`,
+          ``,
+          `<span class="syn-bool">## 🌐 Connect With Me</span>`,
+          `- **GitHub**: [melaniesantillan](${urls.githubUrl})`,
+          `- **TikTok**: [@${cleanHandle(profile.tiktok)}](${urls.tiktokUrl})`,
+          `- **Instagram**: [@${cleanHandle(profile.instagram)}](${urls.instagramUrl})`,
+          `- **Spotify**: [Listen on Spotify](${urls.spotifyUrl})`,
+          `- **Roblox**: [\`${profile.roblox}\`](${urls.robloxUrl})`,
+          `- **Discord**: \`${profile.discord}\``,
+          `- **Email**: ${profile.email}`
+        ];
+      } else if (activeFile === "spotify.tsx") {
+        lines = [
+          `<span class="syn-kw">import</span> React <span class="syn-kw">from</span> <span class="syn-str">'react'</span>;`,
+          ``,
+          `<span class="syn-kw">export const</span> <span class="syn-fn">SpotifyProfile</span> = () =&gt; {`,
+          `  <span class="syn-kw">const</span> user = {`,
+          `    owner: <span class="syn-str">"${profile.name}"</span>,`,
+          `    handle: <span class="syn-str">"@${cleanHandle(profile.tiktok)}"</span>,`,
+          `    profileUrl: <span class="syn-str">"${urls.spotifyUrl}"</span>`,
+          `  };`,
+          ``,
+          `  <span class="syn-kw">return</span> &lt;<span class="syn-tag">SpotifyCard</span> {<span class="syn-key">...user</span>} /&gt;;`,
+          `};`
+        ];
+      } else if (activeFile === "roblox.lua") {
+        lines = [
+          `<span class="syn-com">-- Roblox Player Configuration</span>`,
+          `<span class="syn-kw">local</span> Players = game:GetService(<span class="syn-str">"Players"</span>)`,
+          ``,
+          `<span class="syn-kw">local</span> PortfolioPlayer = {`,
+          `    DisplayName = <span class="syn-str">"${profile.name}"</span>,`,
+          `    Username = <span class="syn-str">"${profile.roblox}"</span>,`,
+          `    Status = <span class="syn-str">"Online &amp; Ready to Play"</span>,`,
+          `    JoinEnabled = <span class="syn-bool">true</span>`,
+          `}`,
+          ``,
+          `<span class="syn-fn">print</span>(<span class="syn-str">"Loaded Roblox profile for "</span> .. PortfolioPlayer.Username)`
+        ];
+      } else if (activeFile === "contact.env") {
+        lines = [
+          `<span class="syn-com"># Direct Contact &amp; Social Environment Variables</span>`,
+          `<span class="syn-key">OWNER_NAME</span>=<span class="syn-str">"${profile.name}"</span>`,
+          `<span class="syn-key">CONTACT_EMAIL</span>=<span class="syn-str">"${profile.email}"</span>`,
+          `<span class="syn-key">GITHUB_URL</span>=<span class="syn-str">"${urls.githubUrl}"</span>`,
+          `<span class="syn-key">DISCORD_TAG</span>=<span class="syn-str">"${profile.discord}"</span>`,
+          `<span class="syn-key">TIKTOK_HANDLE</span>=<span class="syn-str">"@${cleanHandle(profile.tiktok)}"</span>`
+        ];
+      }
+
+      document.getElementById("code-container").innerHTML = formatLines(lines);
+    }
+
+    function renderPreview() {
+      const urls = getUrls();
+      const container = document.getElementById("preview-container");
+      document.getElementById("preview-badge").textContent = profile.name;
+
+      container.innerHTML = `
+        <div class="mb-4 p-4 rounded-lg border border-white/10" style="background-color: var(--card-bg);">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-white">${profile.name}</h2>
+              <p class="text-xs opacity-75 mt-0.5">${profile.bio}</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Online
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          <!-- GitHub Card -->
+          <div class="p-4 rounded-lg border border-white/10 flex flex-col justify-between" style="background-color: var(--card-bg);">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold text-sm flex items-center gap-2 text-white">
+                  <i class="fa-brands fa-github text-lg"></i> GitHub
+                </span>
+                <span class="text-[10px] uppercase tracking-wider opacity-50">Code</span>
+              </div>
+              <p class="text-xs opacity-75 mb-3">Explore repositories and code projects on GitHub.</p>
+            </div>
+            <a href="${urls.githubUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-1.5 rounded bg-white/15 hover:bg-white/25 text-white font-semibold text-xs text-center transition">
+              Open GitHub Profile
+            </a>
+          </div>
+
+          <!-- Spotify Card -->
+          <div class="p-4 rounded-lg border border-white/10 flex flex-col justify-between" style="background-color: var(--card-bg);">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold text-sm flex items-center gap-2 text-[#1DB954]">
+                  <i class="fa-brands fa-spotify text-lg"></i> Spotify
+                </span>
+                <span class="text-[10px] uppercase tracking-wider opacity-50">Music</span>
+              </div>
+              <p class="text-xs opacity-75 mb-3">Check out ${profile.name}'s playlists and favorite tracks on Spotify.</p>
+            </div>
+            <a href="${urls.spotifyUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-1.5 rounded bg-[#1DB954] hover:bg-[#1ed760] text-black font-semibold text-xs text-center transition">
+              Open Spotify Profile
+            </a>
+          </div>
+
+          <!-- TikTok Card -->
+          <div class="p-4 rounded-lg border border-white/10 flex flex-col justify-between" style="background-color: var(--card-bg);">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold text-sm flex items-center gap-2 text-pink-400">
+                  <i class="fa-brands fa-tiktok text-lg"></i> TikTok
+                </span>
+                <span class="text-[10px] uppercase tracking-wider opacity-50">@${cleanHandle(profile.tiktok)}</span>
+              </div>
+              <p class="text-xs opacity-75 mb-3">Watch videos, clips, and updates from @${cleanHandle(profile.tiktok)}.</p>
+            </div>
+            <a href="${urls.tiktokUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-1.5 rounded bg-white/15 hover:bg-white/25 text-white font-semibold text-xs text-center transition">
+              View TikTok (@${cleanHandle(profile.tiktok)})
+            </a>
+          </div>
+
+          <!-- Instagram Card -->
+          <div class="p-4 rounded-lg border border-white/10 flex flex-col justify-between" style="background-color: var(--card-bg);">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold text-sm flex items-center gap-2 text-orange-400">
+                  <i class="fa-brands fa-instagram text-lg"></i> Instagram
+                </span>
+                <span class="text-[10px] uppercase tracking-wider opacity-50">@${cleanHandle(profile.instagram)}</span>
+              </div>
+              <p class="text-xs opacity-75 mb-3">Photos, stories, and highlights on Instagram.</p>
+            </div>
+            <a href="${urls.instagramUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-1.5 rounded bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 text-white font-semibold text-xs text-center transition">
+              Follow @${cleanHandle(profile.instagram)}
+            </a>
+          </div>
+
+          <!-- Roblox Card -->
+          <div class="p-4 rounded-lg border border-white/10 flex flex-col justify-between" style="background-color: var(--card-bg);">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold text-sm flex items-center gap-2 text-sky-400">
+                  <i class="fa-solid fa-gamepad text-lg"></i> Roblox
+                </span>
+                <span class="text-[10px] uppercase tracking-wider opacity-50">Gaming</span>
+              </div>
+              <p class="text-xs opacity-75 mb-3">Username: <span class="text-white font-mono">${profile.roblox}</span></p>
+            </div>
+            <a href="${urls.robloxUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-1.5 rounded bg-[#0078d4] hover:bg-[#026ec1] text-white font-semibold text-xs text-center transition">
+              Find ${profile.roblox} on Roblox
+            </a>
+          </div>
+
+          <!-- Discord Card -->
+          <div class="p-4 rounded-lg border border-white/10 flex flex-col justify-between" style="background-color: var(--card-bg);">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold text-sm flex items-center gap-2 text-[#5865F2]">
+                  <i class="fa-brands fa-discord text-lg"></i> Discord
+                </span>
+                <span class="text-[10px] uppercase tracking-wider text-emerald-400">● Active</span>
+              </div>
+              <p class="text-xs opacity-75 mb-3">Tag: <span class="text-white font-mono">${profile.discord}</span></p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="copyText('${profile.discord}', 'Discord username')" class="flex-1 py-1.5 rounded bg-[#5865F2] hover:bg-[#4752c4] text-white font-semibold text-xs cursor-pointer transition">
+                Copy Username
+              </button>
+              <a href="${urls.discordUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs flex items-center">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email Full-Width Card -->
+        <div class="mt-3.5 p-4 rounded-lg border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3" style="background-color: var(--card-bg);">
+          <div class="flex items-center gap-3">
+            <span class="text-rose-400 text-xl"><i class="fa-solid fa-envelope"></i></span>
+            <div>
+              <h4 class="text-xs font-bold text-white">Direct Email</h4>
+              <p class="text-[11px] opacity-75">${profile.email}</p>
+            </div>
+          </div>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <a href="${urls.emailUrl}" class="flex-1 sm:flex-initial px-4 py-1.5 rounded bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs text-center transition">
+              Send Email
+            </a>
+            <button onclick="copyText('${profile.email}', 'Email')" class="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs cursor-pointer" title="Copy Email">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectFile(name) {
+      activeFile = name;
+      renderSidebarAndTabs();
+      renderCode();
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById("sidebar");
+      sb.classList.toggle("hidden");
+      sb.classList.toggle("flex");
+    }
+
+    function cycleTheme() {
+      themeIdx = (themeIdx + 1) % themes.length;
+      document.body.className = themes[themeIdx].className;
+      document.getElementById("status-theme").textContent = `Theme: ${themes[themeIdx].name}`;
+      logTerminal(`Switched color theme to ${themes[themeIdx].name}.`, "text-sky-400");
+    }
+
+    function copyText(text, label) {
+      navigator.clipboard.writeText(text);
+      logTerminal(`Copied ${label} (${text}) to clipboard!`, "text-emerald-400");
+    }
+
+    function logTerminal(msg, colorClass = "") {
+      const out = document.getElementById("terminal-output");
+      const div = document.createElement("div");
+      div.className = colorClass;
+      div.textContent = msg;
+      out.appendChild(div);
+      out.scrollTop = out.scrollHeight;
+    }
+
+    function focusTerminal() {
+      document.getElementById("terminal-input").focus();
+    }
+
+    document.getElementById("terminal-input").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        const raw = this.value.trim();
+        const cmd = raw.toLowerCase();
+        this.value = "";
+        if (!raw) return;
+
+        logTerminal(`melanie@portfolio:~/src$ ${raw}`, "opacity-60");
+        const urls = getUrls();
+
+        if (cmd === "help") {
+          logTerminal("Available commands: help, socials, spotify, roblox, github, tiktok, instagram, discord, email, edit, clear", "text-sky-300");
+        } else if (cmd === "socials") {
+          logTerminal(`Name: ${profile.name} | Email: ${profile.email}`);
+          logTerminal(`GitHub: ${urls.githubUrl} | Discord: ${profile.discord}`);
+          logTerminal(`TikTok: @${cleanHandle(profile.tiktok)} | Instagram: @${cleanHandle(profile.instagram)}`);
+          logTerminal(`Roblox: ${profile.roblox} | Spotify: ${urls.spotifyUrl}`);
+        } else if (cmd === "spotify") {
+          window.open(urls.spotifyUrl, "_blank");
+          logTerminal("Opening Spotify profile...", "text-emerald-400");
+        } else if (cmd === "github") {
+          window.open(urls.githubUrl, "_blank");
+          logTerminal("Opening GitHub profile...", "text-white");
+        } else if (cmd === "tiktok") {
+          window.open(urls.tiktokUrl, "_blank");
+          logTerminal("Opening TikTok profile...", "text-pink-400");
+        } else if (cmd === "instagram") {
+          window.open(urls.instagramUrl, "_blank");
+          logTerminal("Opening Instagram profile...", "text-orange-400");
+        } else if (cmd === "roblox") {
+          window.open(urls.robloxUrl, "_blank");
+          logTerminal(`Opening Roblox search for ${profile.roblox}...`, "text-indigo-400");
+        } else if (cmd === "discord") {
+          copyText(profile.discord, "Discord username");
+        } else if (cmd === "email") {
+          copyText(profile.email, "Email address");
+        } else if (cmd === "edit") {
+          openModal();
+        } else if (cmd === "clear") {
+          document.getElementById("terminal-output").innerHTML = "";
+        } else {
+          logTerminal(`bash: ${raw}: command not found. Type 'help' for available commands.`, "text-rose-400");
+        }
+      }
+    });
+
+    function openModal() {
+      document.getElementById("inp-name").value = profile.name;
+      document.getElementById("inp-bio").value = profile.bio;
+      document.getElementById("inp-spotify").value = profile.spotify;
+      document.getElementById("inp-roblox").value = profile.roblox;
+      document.getElementById("inp-github").value = profile.github;
+      document.getElementById("inp-instagram").value = profile.instagram;
+      document.getElementById("inp-tiktok").value = profile.tiktok;
+      document.getElementById("inp-discord").value = profile.discord;
+      document.getElementById("inp-email").value = profile.email;
+
+      const modal = document.getElementById("profile-modal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("profile-modal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    document.getElementById("profile-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      profile = {
+        name: document.getElementById("inp-name").value.trim() || defaultProfile.name,
+        bio: document.getElementById("inp-bio").value.trim() || defaultProfile.bio,
+        spotify: document.getElementById("inp-spotify").value.trim() || defaultProfile.spotify,
+        roblox: document.getElementById("inp-roblox").value.trim() || defaultProfile.roblox,
+        github: document.getElementById("inp-github").value.trim() || defaultProfile.github,
+        instagram: document.getElementById("inp-instagram").value.trim() || defaultProfile.instagram,
+        tiktok: document.getElementById("inp-tiktok").value.trim() || defaultProfile.tiktok,
+        discord: document.getElementById("inp-discord").value.trim() || defaultProfile.discord,
+        email: document.getElementById("inp-email").value.trim() || defaultProfile.email
+      };
+      localStorage.setItem("vscode_portfolio_melanie_v2", JSON.stringify(profile));
+      closeModal();
+      renderAll();
+      logTerminal("Profile updated and saved!", "text-emerald-400");
+    });
+
+    function resetProfile() {
+      profile = { ...defaultProfile };
+      localStorage.setItem("vscode_portfolio_melanie_v2", JSON.stringify(profile));
+      closeModal();
+      renderAll();
+      logTerminal("Profile reset to Melanie Santillan's defaults.", "text-amber-400");
+    }
+
+    function renderAll() {
+      renderSidebarAndTabs();
+      renderCode();
+      renderPreview();
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
